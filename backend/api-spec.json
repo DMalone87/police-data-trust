@@ -1,0 +1,808 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "NPDI API",
+    "description": "API Description",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://dev-api.nationalpolicedfata.org/api/v1",
+      "description": "Development environment"
+    },
+    {
+        "url": "https://stage-api.nationalpolicedata.org/api/v1",
+        "description": "Staging environment"
+    },
+    {
+        "url": "https://api.nationalpolicedata.org",
+        "description": "Production environment"
+    }
+  ],
+  "paths": {
+    "/incidents/create": {
+      "post": {
+        "summary": "Create Incident",
+        "operationId": "createIncident",
+        "description": "Create a single incident. Cannot be called in production environment.",
+        "requestBody": {
+            "description": "Incident object that needs to be added to the database",
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/CreateIncident"
+                }
+                }
+            }
+        },
+        "responses": {
+          "200": {
+            "description": "A JSON array of user names",
+            "content": {
+              "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incidents/get/{incident_id}": {
+        "get": {
+            "summary": "Get Incident",
+            "operationId": "getIncident",
+            "description": "Get a single incident by id",
+            "parameters": [
+            {
+                "name": "incident_id",
+                "in": "path",
+                "description": "The id of the incident you want to retrieve.",
+                "required": true,
+                "schema": {
+                "type": "string"
+                }
+            }
+            ],
+            "responses": {
+            "200": {
+                "description": "An incident object",
+                "content": {
+                "application/json": {
+                    "schema": {
+                        "$ref": "#/components/schemas/IncidentResponse"
+                    }
+                }
+                }
+            }
+            }
+        }
+    },
+    "/incidents/search": {
+      "post": {
+        "summary": "Search Incidents",
+        "operationId": "searchIncidents",
+        "description": "Search for incidents based on a request body",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page of results you want to retrieve.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "The number of results to per page you want to retrieve.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+            "description": "Incident object that needs to be added to the database",
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/CreateIncident"
+                }
+                }
+            }
+        },
+        "responses": {
+          "200": {
+            "description": "A JSON array of incident objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/IncidentList"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/healthcheck": {
+        "get": {
+          "summary": "Health Check",
+          "operationId": "healthCheck",
+          "description": "Verifies service health and returns the api version",
+          "responses": {
+            "200": {
+              "description": "Health Check",
+              "content": {
+                "application/json": {
+                  "schema": {
+                      "$ref": "#/components/schemas/HealthCheckResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+  },
+  "components": {
+    "schemas": {
+        "Victim": {
+            "type": "object",
+            "description": "Victim object",
+            "properties":{
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the victim"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the victim"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "race":  {
+                    "type": "string",
+                    "description": "Reported race of the victim"
+                },
+                "gender": {
+                    "type": "string",
+                    "description": "Reported gender of the victim"
+                },
+                "date_of_birth": {
+                    "type": "string",
+                    "description": "Date of birth of the victim",
+                    "format": "date-time"
+                },
+                "manner_of_injury": {
+                    "type": "string",
+                    "description": "Manner of injury of the victim"
+                },
+                "injury_description": {
+                    "type": "string",
+                    "description": "Description of the injury of the victim"
+                },
+                "injury_condition": {
+                    "type": "string",
+                    "description": "Condition of the injury of the victim"
+                },
+                "deceased": {
+                    "type": "boolean",
+                    "description": "Whether the victim is deceased"
+                },
+                "time_of_death": {
+                    "type": "string",
+                    "description": "Time of death of the victim",
+                    "format": "date-time"
+                }
+            }
+        },
+        "Accusation": {
+            "type": "object",
+            "description": "Accusation object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the accusation"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "official_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the officer"
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Category of the accusation"
+                },
+                "category_code": {
+                    "type": "string",
+                    "description": "Category code of the accusation"
+                },
+                "finding": {
+                    "type": "string",
+                    "description": "Finding of the accusation"
+                },
+                "outcome": {
+                    "type": "string",
+                    "description": "Outcome of the accusation"
+                }
+            }
+        },
+        "Officer": {
+            "type": "object",
+            "description": "Officer object",
+            "properties":{
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the officer"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "first_name": {
+                    "type": "string",
+                    "description": "First name of the officer"
+                },
+                "last_name": {
+                    "type": "string",
+                    "description": "Last name of the officer"
+                },
+                "race": {
+                    "type": "string",
+                    "description": "Race of the officer"
+                },
+                "gender": {
+                    "type":"string",
+                    "description": "Gender of the officer"
+                },
+                "appointed_date": {
+                    "type": "string",
+                    "description": "Date the officer was appointed",
+                    "format": "date-time"
+                },
+                "badge_number": {
+                    "type": "string",
+                    "description": "Badge number of the officer"
+                },
+                "unit": {
+                    "type": "string",
+                    "description": "Unit of the officer"
+                },
+                "rank": {
+                    "type": "string",
+                    "description": "Rank of the officer",
+                    "enum": [
+                        "TECHNICIAN",
+                        "OFFICER",
+                        "DETECTIVE",
+                        "CORPORAL",
+                        "SERGEANT",
+                        "LIEUTENANT",
+                        "CAPTAIN",
+                        "DEPUTY",
+                        "CHIEF"
+                    ]
+                },
+                "star": {
+                    "type": "string",
+                    "description": "Star of the officer"
+                },
+                "date_of_birth": {
+                    "type": "string",
+                    "description": "Date of birth of the officer",
+                    "format": "date-time"
+                },
+                "accusations": {
+                    "type": "array",
+                    "description": "Accusations against the officer",
+                    "items": {
+                        "$ref": "#/components/schemas/Accusation"
+                    }
+                }
+            }
+        },
+        "Participant": {
+            "type": "object",
+            "description": "Participant object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the participant"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "gender": {
+                    "type":"string",
+                    "description": "The gender of the participant"
+                },
+                "race": {
+                    "type":"string",
+                    "description": "The race of the participant"
+                },
+                "age": {
+                    "type": "integer",
+                    "description": "Age of the participant at the time of the incident"
+                }
+            }
+        },
+        "Multimedia": {
+            "type": "object",
+            "description": "Multimedia object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the multimedia"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                }
+            }
+        },
+        "Investigation": {
+            "type": "object",
+            "description": "Investigation object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the investigation"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "official_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the official"
+                },
+                "investigator_name": {
+                    "type": "string",
+                    "description": "Name of the investigator"
+                },
+                "investigator_rank": {
+                    "type": "string",
+                    "description": "Rank of the investigator"
+                },
+                "start_date": {
+                    "type": "string",
+                    "description": "Date the investigation started",
+                    "format": "date-time"
+                },
+                "end_date": {
+                    "type": "string",
+                    "description": "Date the investigation ended",
+                    "format": "date-time"
+                },
+                "finding": {
+                    "type": "string",
+                    "description": "Finding of the investigation",
+                    "enum": [
+                        "Unfounded",
+                        "Exonerated",
+                        "Sustained",
+                        "Not Sustained",
+                        "Sustained - Policy Failure",
+                        "Sustained - Training Failure",
+                        "Sustained - Tactical Failure",
+                        "Sustained - Procedural Failure",
+                        "Sustained - Supervisory Failure",
+                        "Sustained - Other",
+                        "Pending",
+                        "Unknown"
+                    ]
+                },
+                "outcome": {
+                    "type": "string",
+                    "description": "Outcome of the investigation",
+                    "enum": [
+                        "No Action Taken",
+                        "Counseling",
+                        "Training",
+                        "Mediation",
+                        "Policy Change",
+                        "Disciplinary Action",
+                        "Criminal Charges",
+                        "Unknown"
+                    ]
+                },
+                "allegation": {
+                    "type": "string",
+                    "description": "Allegation of the investigation"
+                },
+                "allegation_code": {
+                    "type": "string",
+                    "description": "Allegation code of the investigation"
+                },
+                "jurisdiction": {
+                    "type": "string",
+                    "description": "Jurisdiction of the investigation"
+                }
+            }
+        },
+        "ResultOfStop": {
+            "type": "object",
+            "description": "Result of stop object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the result of stop"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "result": {
+                    "type": "string",
+                    "description": "Result of the stop",
+                    "enum": [
+                        "Arrest",
+                        "Citation",
+                        "Verbal Warning",
+                        "Written Warning",
+                        "No Action Taken",
+                        "Unknown"
+                    ]
+                }
+            }
+        },
+        "Action": {
+            "type": "object",
+            "description": "Action object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the action"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "date": {
+                    "type": "string",
+                    "description": "Date the action was taken",
+                    "format": "date-time"
+                },
+                "action": {
+                    "type": "string",
+                    "description": "Action taken"
+                },
+                "actor": {
+                    "type": "string",
+                    "description": "Actor who took the action"
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Notes about the action"
+                }
+            }
+        },
+        "UseOfForce": {
+            "type": "object",
+            "description": "Use of force object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the use of force"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "item": {
+                    "type": "string",
+                    "description": "Item used in the use of force"
+                }
+            }
+        },
+        "LegalCase": {
+            "type": "object",
+            "description": "Legal case object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier for the legal case"
+                },
+                "incident_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the incident"
+                },
+                "case_type": {
+                    "type": "string",
+                    "description": "Type of the legal case",
+                    "enum": [
+                        "CIVIL",
+                        "CRIMINAL"
+                    ]
+                },
+                "jurisdiction": {
+                    "type": "string",
+                    "description": "Jurisdiction of the legal case"
+                },
+                "judge": {
+                    "type": "string",
+                    "description": "Judge of the legal case"
+                },
+                "docket_number": {
+                    "type": "string",
+                    "description": "Docket number of the legal case"
+                },
+                "defendant": {
+                    "type": "string",
+                    "description": "Defendant of the legal case"
+                },
+                "defendant_council": {
+                    "type": "string",
+                    "description": "Defendant council of the legal case"
+                },
+                "plaintiff": {
+                    "type": "string",
+                    "description": "Plaintiff of the legal case"
+                },
+                "plaintiff_council": {
+                    "type": "string",
+                    "description": "Plaintiff council of the legal case"
+                },
+                "start_date": {
+                    "type": "string",
+                    "description": "Date the legal case started",
+                    "format": "date-time"
+                },
+                "end_date": {
+                    "type": "string",
+                    "description": "Date the legal case ended",
+                    "format": "date-time"
+                },
+                "outcome": {
+                    "type": "string",
+                    "description": "Outcome of the legal case",
+                    "enum": [
+                        "Dismissed",
+                        "Settled",
+                        "Judgement for Plaintiff",
+                        "Judgement for Defendant",
+                        "Unknown"
+                    ]
+                },
+            }
+        },
+        "Incident": {
+            "type": "object",
+            "description": "Incident object",
+            "properties": {
+                "victims": {
+                    "type": "array",
+                    "description": "Victims of the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Victim"
+                    }
+                },
+                "officers": {
+                    "type": "array",
+                    "description": "Officers involved in the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Officer"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "description": "Tags associated with the incident",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "participants": {
+                    "type": "array",
+                    "description": "Participants in the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Participant"
+                    }
+                },
+                "multimedias": {
+                    "type": "array",
+                    "description": "Multimedia associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Multimedia"
+                    }
+                },
+                "investigations": {
+                    "type": "array",
+                    "description": "Investigations associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Investigation"
+                    }
+                },
+                "results_of_stop": {
+                    "type": "array",
+                    "description": "Results of stop associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/ResultOfStop"
+                    }
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Actions associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Action"
+                    }
+                },
+                "use_of_force": {
+                    "type": "array",
+                    "description": "Use of force associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/UseOfForce"
+                    }
+                },
+                "legal_case": {
+                    "type": "array",
+                    "description": "Legal case associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/LegalCase"
+                    }
+                }
+            }
+        },
+        "CreateIncident": {
+            "type": "object",
+            "description": "Incident object",
+            "properties": {
+                "victims": {
+                    "type": "array",
+                    "description": "Victims of the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Victim"
+                    }
+                },
+                "officers": {
+                    "type": "array",
+                    "description": "Officers involved in the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Officer"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "description": "Tags associated with the incident",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "participants": {
+                    "type": "array",
+                    "description": "Participants in the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Participant"
+                    }
+                },
+                "multimedias": {
+                    "type": "array",
+                    "description": "Multimedia associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Multimedia"
+                    }
+                },
+                "investigations": {
+                    "type": "array",
+                    "description": "Investigations associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Investigation"
+                    }
+                },
+                "results_of_stop": {
+                    "type": "array",
+                    "description": "Results of stop associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/ResultOfStop"
+                    }
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Actions associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Action"
+                    }
+                },
+                "use_of_force": {
+                    "type": "array",
+                    "description": "Use of force associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/UseOfForce"
+                    }
+                },
+                "legal_case": {
+                    "type": "array",
+                    "description": "Legal case associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/LegalCase"
+                    }
+                }
+            }
+        },
+        "IncidentResponse": {
+            "type": "object",
+            "description": "Incident object",
+            "properties": {
+                "officers": {
+                    "type": "array",
+                    "description": "Officers involved in the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/Officer"
+                    }
+                },
+                "use_of_force": {
+                    "type": "array",
+                    "description": "Use of force associated with the incident",
+                    "items": {
+                        "$ref": "#/components/schemas/UseOfForce"
+                    }
+                }
+            }
+        },
+        "IncidentList": {
+            "type": "object",
+            "description": "Incident list response",
+            "properties": {
+                "results": {
+                    "type": "array",
+                    "description": "List of incidents",
+                    "items": {
+                        "$ref": "#/components/schemas/Incident"
+                    }
+                },
+                "page": {
+                    "type": "integer",
+                    "description": "Page number of the results"
+                },
+                "totalPages": {
+                    "type": "integer",
+                    "description": "Total number of pages"
+                },
+                "totalResults": {
+                    "type": "integer",
+                    "description": "Total number of results"
+                }
+            }
+        },
+        "HealthCheckResponse": {
+
+        }
+    },
+    "responses": {},
+    "parameters": {},
+    "examples": {},
+    "requestBodies": {},
+    "headers": {},
+    "securitySchemes": {
+        "cookieAuth": {
+            "type": "apiKey",
+            "in": "cookie",
+            "name": "access_token_cookie"
+        },
+        "bearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
+        }
+    },
+    "links": {},
+    "callbacks": {}
+  },
+  "tags": [],
+  "security": [
+    {
+      "cookieAuth": []
+    }
+  ]
+}
