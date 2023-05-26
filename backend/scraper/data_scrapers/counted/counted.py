@@ -99,18 +99,11 @@ def col_conv():
 
 
 def create_counted_orm(r: namedtuple):
-    victim = md.Victim(
-        name=r.victim_name,
-        race=r.victim_race,
-        gender=r.victim_gender,
-        deceased=True,
-    )
     incident = md.Incident(
         source="counted",
         source_id=r.source_id,
         time_of_incident=r.incident_date,
         department=r.department,
-        victims=[victim],
         location=f"{r.address} {r.city} {r.state}",
     )
 
@@ -119,11 +112,8 @@ def create_counted_orm(r: namedtuple):
 
 def create_source():
     source = md.Source(
-        id="counted",
-        publication_name="The Guardian",
-        publication_date="06/1/2015",
-        author="Jon Swaine, Oliver Laughland, Jamiles Lartey, Ciara McCarthy",
-        URL="https://interactive.guim.co.uk/2015/\
+        name="The Guardian",
+        url="https://interactive.guim.co.uk/2015/\
         the-counted/thecounted-data.zip",
     )
     return source

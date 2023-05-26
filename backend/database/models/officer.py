@@ -19,7 +19,7 @@ class Rank(str, enum.Enum):
 
 
 class Officer(db.Model, SourceMixin):
-    id = db.Column(db.Integer, primary_key=True)  # officer id
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # officer id
     incident_id = db.Column(db.Integer, db.ForeignKey("incident.id"))
     first_name = db.Column(db.Text)
     last_name = db.Column(db.Text)

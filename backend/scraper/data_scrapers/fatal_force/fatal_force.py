@@ -45,12 +45,6 @@ def fatal_cols():
 
 
 def create_FF_orm(r: namedtuple):
-    victim = md.Victim(
-        name=r.victim_name,
-        race=r.victim_race,
-        gender=r.victim_gender,
-        deceased=True,
-    )
 
     incident = md.Incident(
         source="fatal_force",
@@ -68,11 +62,8 @@ def create_FF_orm(r: namedtuple):
 
 def create_source():
     source = md.Source(
-        id="fatal_force",
-        publication_name="Fatal Force",
-        publication_date="05/22/2022",
-        author="test",
-        URL="https://github.com/washingtonpost/\
+        name="Fatal Force",
+        url="https://github.com/washingtonpost/\
             data-police-shootings/releases/download/\
                 v0.1/fatal-police-shootings-data.csv",
     )

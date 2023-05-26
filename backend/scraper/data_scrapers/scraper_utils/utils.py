@@ -63,12 +63,6 @@ def parse_accusations(r: namedtuple, officers: List[md.Officer]):
 
 
 def create_orm(r: namedtuple, source):
-    victim = md.Victim(
-        name=r.victim_name,
-        race=r.victim_race,
-        gender=r.victim_gender,
-        deceased=True,
-    )
     officers = parse_officers(r)
     accusations = parse_accusations(r, officers)
     incident = md.Incident(

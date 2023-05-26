@@ -4,8 +4,11 @@ import enum
 
 from ..core import CrudMixin, SourceMixin, db
 
-# Question: Should we be doing string enums?
-
+class RecordType(enum.Enum):
+    NEWS_REPORT = 1
+    GOVERNMENT_RECORD = 2
+    LEGAL_ACTION = 3
+    PERSONAL_ACCOUNT = 4
 
 class InitialEncounter(enum.Enum):
     UNKNOWN = 1
@@ -61,36 +64,36 @@ class Incident(db.Model, CrudMixin, SourceMixin):
     """The incident table is the fact table."""
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    source_id = db.Column(db.Integer, db.ForeignKey("source.id"))
+    description = db.Column(db.Text)
+    record_type = db.Column(db.Enum(RecordType))
     time_of_incident = db.Column(db.DateTime)
+    time_confidence = db.Column(db.Integer)
+    has_attachments = db.Column(db.Boolean)
     complaint_date = db.Column(db.Date)
+    publication_name = db.Column(db.Text)
+    publication_date = db.Column(db.Date)
+    author = db.Column(db.Text)
+    source_url = db.Column(db.Text)
     closed_date = db.Column(db.Date)
     location = db.Column(db.Text)  # TODO: location object
     # Float is double precision (8 bytes) by default in Postgres
     longitude = db.Column(db.Float)
     latitude = db.Column(db.Float)
-    # TODO: neighborhood seems like a weird identifier that may not always
-    #  apply in consistent ways across municipalities.
-    neighborhood = db.Column(db.Text)
-    description = db.Column(db.Text)
     stop_type = db.Column(db.Text)  # TODO: enum
     call_type = db.Column(db.Text)  # TODO: enum
-    has_multimedia = db.Column(db.Boolean)
-    from_report = db.Column(db.Boolean)
-    # These may require an additional table. Also can dox a victim
     was_victim_arrested = db.Column(db.Boolean)
     arrest_id = db.Column(db.Integer)  # TODO: foreign key of some sort?
     # Does an existing warrant count here?
     criminal_case_brought = db.Column(db.Boolean)
     case_id = db.Column(db.Integer)  # TODO: foreign key of some sort?
-    victims = db.relationship("Victim", backref="incident")
     # TODO: Remove this. incident-officer relationship is many-many using
     # accusation as the join table.
     officers = db.relationship("Officer", backref="incident")
-    department = db.Column(db.Text)
-    # descriptions = db.relationship("Description", backref="incident")
+    agencies_present = db.relationship('Agency', secondary='agency_incident', backref='incidents')
     tags = db.relationship("Tag", backref="incident")
     participants = db.relationship("Participant", backref="incident")
-    multimedias = db.relationship("Multimedia", backref="incident")
+    attachments = db.relationship("Attachments", backref="incident")
     investigations = db.relationship("Investigation", backref="incident")
     results_of_stop = db.relationship("ResultOfStop", backref="incident")
     actions = db.relationship("Action", backref="incident")
@@ -99,26 +102,3 @@ class Incident(db.Model, CrudMixin, SourceMixin):
     accusations = db.relationship("Accusation", backref="incident")
 
 
-class Description(db.Model):
-    id = db.Column(db.Integer, primary_key=True)  # description id
-    incident_id = db.Column(
-        db.Integer, db.ForeignKey("incident.id"), nullable=False
-    )
-    text = db.Column(db.Text)
-    type = db.Column(db.Text)  # TODO: enum
-    # TODO: are there rules for this column other than text?
-    source = db.Column(db.Text)
-    # location = db.Column(db.Text)  # TODO: location object
-    # # TODO: neighborhood seems like a weird identifier that may not always
-    # #  apply in consistent ways across municipalities.
-    # neighborhood = db.Column(db.Text)
-    # stop_type = db.Column(db.Text)  # TODO: enum
-    # call_type = db.Column(db.Text)  # TODO: enum
-    # has_multimedia = db.Column(db.Boolean)
-    # from_report = db.Column(db.Boolean)
-    # # These may require an additional table. Also can dox a victim
-    # was_victim_arrested = db.Column(db.Boolean)
-    # arrest_id = db.Column(db.Integer)  # TODO: foreign key of some sort?
-    # # Does an existing warrant count here?
-    # criminal_case_brought = db.Column(db.Boolean)
-    # case_id = db.Column(db.Integer)  # TODO: foreign key of some sort?

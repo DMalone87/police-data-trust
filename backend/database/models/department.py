@@ -1,4 +1,7 @@
 import enum
+
+from backend.database.core import SourceMixin
+
 from .. import db
 
 class JURISDICTION(enum.Enum):
@@ -9,8 +12,9 @@ class JURISDICTION(enum.Enum):
     PRIVATE = 5
     OTHER = 6
 
-class Agency(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+
+class Department(db.Model, SourceMixin):
+    id = db.Column(db.Integer, primary_key=True)  # department id
     incident_id = db.Column(db.Integer, db.ForeignKey("incident.id"))
     name = db.Column(db.Text)
     hq_address = db.Column(db.Text)

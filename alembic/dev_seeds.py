@@ -71,11 +71,8 @@ def create_source(source):
 
 create_source(
     Source(
-        id="mpv",
-        publication_name="Mapping Police Violence",
-        publication_date="01/01/2015",
-        author="Samuel Sinyangwe",
-        URL="https://mappingpoliceviolence.us",
+        name="Mapping Police Violence",
+        url="https://mappingpoliceviolence.us",
     )
 )
 

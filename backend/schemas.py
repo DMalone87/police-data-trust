@@ -9,17 +9,18 @@ from spectree.models import Server
 from sqlalchemy.ext.declarative.api import DeclarativeMeta
 
 from .database import User
+from .database.models._agency_incident import agency_incident
 from .database.models.action import Action
-from .database.models.incident import Description, Incident
+from .database.models.incident import Incident
 from .database.models.investigation import Investigation
 from .database.models.legal_case import LegalCase
-from .database.models.multimedia import Multimedia
+from .database.models.attachments import Attachments
 from .database.models.officer import Officer
+from .database.models.agency import Agency
 from .database.models.participant import Participant
 from .database.models.result_of_stop import ResultOfStop
 from .database.models.tag import Tag
 from .database.models.use_of_force import UseOfForce
-from .database.models.victim import Victim
 
 spec = SpecTree(
     "flask",
@@ -96,6 +97,7 @@ def validate(auth=True, **kwargs):
 _incident_list_attrs = [
     "victims",
     "officers",
+    "agencies_present",
     "descriptions",
     "tags",
     "participants",
@@ -128,12 +130,11 @@ def schema_create(model_type: DeclarativeMeta, **kwargs) -> ModelMetaclass:
 
 
 _BaseCreateIncidentSchema = schema_create(Incident)
-CreateVictimSchema = schema_create(Victim)
 CreateOfficerSchema = schema_create(Officer)
-CreateDescriptionSchema = schema_create(Description)
+CreateAgencySchema = schema_create(Agency)
 CreateTagSchema = schema_create(Tag)
 CreateParticipantSchema = schema_create(Participant)
-CreateMultimediaSchema = schema_create(Multimedia)
+CreateAttachmentSchema = schema_create(Attachments)
 CreateInvestigationSchema = schema_create(Investigation)
 CreateResultOfStopSchema = schema_create(ResultOfStop)
 CreateActionSchema = schema_create(Action)
@@ -142,11 +143,11 @@ CreateLegalCaseSchema = schema_create(LegalCase)
 
 
 class CreateIncidentSchema(_BaseCreateIncidentSchema, _IncidentMixin):
-    victims: Optional[List[CreateVictimSchema]]
     officers: Optional[List[CreateOfficerSchema]]
+    agencies_present: Optional[List[CreateAgencySchema]]
     tags: Optional[List[CreateTagSchema]]
     participants: Optional[List[CreateParticipantSchema]]
-    multimedias: Optional[List[CreateMultimediaSchema]]
+    attachment: Optional[List[CreateAttachmentSchema]]
     investigations: Optional[List[CreateInvestigationSchema]]
     results_of_stop: Optional[List[CreateResultOfStopSchema]]
     actions: Optional[List[CreateActionSchema]]
@@ -159,12 +160,11 @@ def schema_get(model_type: DeclarativeMeta, **kwargs) -> ModelMetaclass:
 
 
 _BaseIncidentSchema = schema_get(Incident)
-VictimSchema = schema_get(Victim)
 OfficerSchema = schema_get(Officer)
-DescriptionSchema = schema_get(Description)
+AgencySchema = schema_get(Agency)
 TagSchema = schema_get(Tag)
 ParticipantSchema = schema_get(Participant)
-MultimediaSchema = schema_get(Multimedia)
+AttachmentSchema = schema_get(Attachments)
 InvestigationSchema = schema_get(Investigation)
 ResultOfStopSchema = schema_get(ResultOfStop)
 ActionSchema = schema_get(Action)
@@ -173,11 +173,11 @@ LegalCaseSchema = schema_get(LegalCase)
 
 
 class IncidentSchema(_BaseIncidentSchema, _IncidentMixin):
-    victims: List[VictimSchema]
     officers: List[OfficerSchema]
+    agencies_present: List[AgencySchema]
     tags: List[TagSchema]
     participants: List[ParticipantSchema]
-    multimedias: List[MultimediaSchema]
+    attachments: List[AttachmentSchema]
     investigations: List[InvestigationSchema]
     results_of_stop: List[ResultOfStopSchema]
     actions: List[ActionSchema]
